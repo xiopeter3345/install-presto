@@ -29,7 +29,8 @@ if [[ $(hostname -s) = hn0-* ]]; then
   cd presto-hdinsight-master
   wget https://prestohdi.blob.core.windows.net/build/presto-yarn-package.zip -P build/
   slider package --install --name presto1 --package build/presto-yarn-package.zip --replacepkg
-  sed -i 's/"nodeHostName":"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"/"nodeHostName"/' ./createconfigs.sh
+  sed -i '/^nodes/d' ./createconfigs.sh
+  sed -i '3 inodes=$(curl -L http://headnodehost:8088/ws/v1/cluster/nodes |  grep -o '"nodeHostName"'  | wc -l)' ./createconfigs.sh
   ./createconfigs.sh $VERSION "${1:-}"
   slider exists presto1 --live && slider stop presto1 --force
   slider exists presto1 && slider destroy presto1 --force
